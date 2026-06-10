@@ -1,0 +1,10 @@
+{
+  "name": "TextExtractor",
+  "description": "An AI-powered tool that extracts structured tabular data from images of receipts, forms, and documents, ready for Excel import.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
