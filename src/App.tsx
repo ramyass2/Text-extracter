@@ -25,6 +25,7 @@ interface ExtractionResult {
 export default function App() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [qrUrl, setQrUrl] = useState<string>("");
   
   // Extraction & Processing states
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,14 @@ export default function App() {
   const nativeCameraInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Use location origin or full href. Origin allows them to test easily,
+      // let's do window.location.href or fallback to origin if running on dev
+      setQrUrl(window.location.href);
+    }
+  }, []);
 
   // Load available camera devices when scanner is opened
   useEffect(() => {
@@ -373,43 +382,66 @@ export default function App() {
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-slate-100"></div>
                   </div>
-                  <span className="relative bg-white px-3 text-xs text-slate-400 font-medium tracking-wide uppercase">Or Capture Photo</span>
+                  <span className="relative bg-white px-3 text-[10px] text-slate-400 font-bold tracking-wider uppercase">Or Scan & Capture</span>
                 </div>
 
                 {/* Instant Scanner Actions */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-4">
                   
-                  {/* Browser Live modal Camera Scanner */}
+                  {/* Browser Live modal Camera Scanner - Full Width */}
                   <button
                     onClick={() => setIsCameraOpen(true)}
-                    className="flex flex-col items-center justify-center gap-2 p-4 border border-slate-200 hover:border-indigo-400 hover:bg-slate-50 bg-white rounded-xl text-center transition-all group"
+                    className="w-full flex items-center justify-center gap-3 p-3.5 border border-slate-200 hover:border-indigo-400 hover:bg-slate-50 bg-white rounded-xl transition-all group"
                   >
-                    <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg group-hover:scale-105 transition-transform">
-                      <Camera className="w-5 h-5" />
+                    <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg group-hover:scale-105 transition-transform">
+                      <Camera className="w-4 h-4" />
                     </div>
-                    <span className="text-xs font-semibold text-slate-700">Live Web Scanner</span>
+                    <span className="text-xs font-bold text-slate-700">Open Laptop Live Scanner</span>
                   </button>
 
-                  {/* Native direct phone camera trigger using input capture */}
-                  <button
-                    onClick={() => nativeCameraInputRef.current?.click()}
-                    className="flex flex-col items-center justify-center gap-2 p-4 border border-slate-200 hover:border-indigo-400 hover:bg-slate-50 bg-white rounded-xl text-center transition-all group"
-                  >
-                    <div className="p-2.5 bg-violet-50 text-violet-600 rounded-lg group-hover:scale-105 transition-transform">
-                      <Smartphone className="w-5 h-5" />
+                  {/* QR Companion block */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center gap-3">
+                    <div className="text-center">
+                      <h4 className="text-xs font-bold text-slate-800">Scan QR Code with Phone</h4>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-relaxed">
+                        Instantly open this app on your mobile device to snap and upload high-fidelity photos directly!
+                      </p>
                     </div>
-                    <span className="text-xs font-semibold text-slate-700">Phone Camera</span>
-                  </button>
+
+                    <div className="bg-white p-2.5 rounded-lg shadow-sm border border-slate-200/60 max-w-[130px] aspect-square flex items-center justify-center">
+                      {qrUrl ? (
+                        <img 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(qrUrl)}`}
+                          alt="Mobile Scanner QR Link"
+                          className="w-[110px] h-[110px]"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-[110px] h-[110px] bg-slate-100 animate-pulse rounded flex items-center justify-center text-center text-[9px] text-slate-450 px-1">
+                          Generating link...
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Highly practical editable URL field so laptop localhost developers can substitute with LAN IP manually */}
+                    <div className="w-full">
+                      <label className="block text-[10px] font-bold text-slate-500 mb-1">
+                        Localhost / Phone Access Target URL:
+                      </label>
+                      <input 
+                        type="text" 
+                        value={qrUrl}
+                        onChange={(e) => setQrUrl(e.target.value)}
+                        placeholder="http://192.168.x.x:3000"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-[11px] font-mono text-slate-600 focus:outline-none focus:border-indigo-400 shadow-inner"
+                      />
+                      <p className="text-[9px] text-slate-400 mt-1 leading-relaxed">
+                        Currently resolved to browser address. If running in VS Code locally, replace with your laptop's Wi-Fi IP address so your mobile phone can connect!
+                      </p>
+                    </div>
+
+                  </div>
                   
-                  {/* Native Hidden Camera Handler */}
-                  <input
-                    type="file"
-                    className="hidden"
-                    ref={nativeCameraInputRef}
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handleFileSelect}
-                  />
                 </div>
 
               </div>
