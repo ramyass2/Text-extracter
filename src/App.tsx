@@ -478,10 +478,7 @@ export default function App() {
                 </div>
 
                 <div className="max-w-sm w-full">
-                  <h3 className="text-lg font-bold text-slate-900 mb-1">Processing and Extrapolating Data</h3>
-                  <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider mb-5">
-                    {progressStatus}
-                  </p>
+                  <h3 className="text-lg font-bold text-slate-900 mb-5">Processing...</h3>
 
                   {/* Fully functional premium progress bar requested */}
                   <div className="w-full bg-slate-100 rounded-full h-3.5 p-0.5 mb-2 overflow-hidden border border-slate-200">
@@ -562,8 +559,8 @@ export default function App() {
 
                 {/* Spreadsheet layout bottom status */}
                 <div className="p-4 bg-slate-50 border-t border-slate-100 mt-auto flex flex-wrap gap-2 items-center justify-between">
-                  <span className="text-xs text-slate-500">
-                    Ready for Excel import: <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">YES</span>
+                  <span className="text-xs text-slate-400">
+                    {result.rows.length} row(s) identified
                   </span>
                   
                   {/* Highlighted additional Download action at bottom */}
